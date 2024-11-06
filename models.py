@@ -12,20 +12,18 @@ class CustomGCNConv(MessagePassing):
         self.lin = nn.Linear(in_channels, out_channels, bias=bias)
 
     def forward(self, x, edge_index, edge_weight, self_loop_weights=None):
-        # 添加自环
+        # Add self loop
         if self_loop_weights is not None:
             edge_index, edge_weight = add_self_loops(edge_index, edge_weight, num_nodes=x.size(0),
                                                      fill_value=self_loop_weights)
 
-        # 先进行线性变换
         x = self.lin(x)
 
-        # 然后进行消息传递
         return self.propagate(edge_index, size=(x.size(0), x.size(0)), x=x, edge_weight=edge_weight)
 
     def message(self, x_j, edge_weight):
-        # x_j是邻居节点的特征
-        # edge_weight是对应的边权重
+        # x_j is a characteristic of neighboring nodes
+        # edge_weight  is the corresponding edge weight
         return edge_weight.view(-1, 1) * x_j
 
 
@@ -63,7 +61,7 @@ class QValueNetMultiHeadAttention(nn.Module):
 
         values = values.view(values.shape[0], values.shape[1], self.num_heads, -1).permute(0, 2, 1, 3)
         values = values.reshape(-1, values.shape[2], values.shape[3])
-        # 恢复形状
+
         out = self.attention(queries, keys, values)
         out = out.view(-1, self.num_heads, out.shape[1], out.shape[2]).permute(0, 2, 1, 3)
         out = out.reshape(out.shape[0], out.shape[1], -1)
@@ -139,8 +137,6 @@ class QValueNet(nn.Module):
         self.gamma4 = nn.Linear(3 * num_features // 2, 1)
 
     def forward(self, x, edge_index, edge_weight, batch, states):
-        # x1: 建模节点可到达的能力，也反映节点在图中的结构信息
-        # x2: 建模节点的传播能力
         x = self.encoder(x, edge_index, edge_weight)[1]
         x1 = x[:, : x.shape[1] // 2]
         x2 = x[:, x.shape[1] // 2:]
@@ -154,7 +150,7 @@ class QValueNet(nn.Module):
             x2_list.append(x2)
 
         # attention
-        # 拼接上述每步聚合得到的节点信息，使用多头注意力，对多头注意力得到的结果，再计算注意力聚合每步的信息
+        # Combine the node information obtained from each step of aggregation, use multi head attention, and calculate the information for each step of attention aggregation based on the results obtained from multi head attention
         x1 = torch.cat(x1_list, dim=-1).view(-1, self.T, x1.shape[-1])
         x2 = torch.cat(x2_list, dim=-1).view(-1, self.T, x2.shape[-1])
         x1_a = self.attention1(x1, x1, x1)
@@ -164,10 +160,10 @@ class QValueNet(nn.Module):
         x1 = x1_aw.bmm(x1_a).squeeze(dim=1) + x1.sum(dim=1)
         x2 = x2_aw.bmm(x2_a).squeeze(dim=1) + x2.sum(dim=1)
 
-        # 拼接x1和x2得到节点的最终向量表示
+        # Splicing x1 and x2 to obtain the final vector representation of the node
         x = F.leaky_relu(self.beta2(torch.cat([self.beta0(x1), self.beta1(x2)], dim=-1)), 0.2)
 
-        # 计算q
+        # Calculate q
         selected_nodes = states == 1
         batch_num = torch_scatter.scatter_add(torch.ones(batch.shape[0], dtype=torch.long, device=batch.device), batch)
         x_s = torch_scatter.scatter_add(x[selected_nodes], batch[selected_nodes], dim=0,
@@ -202,9 +198,6 @@ class StudentQValueNet(nn.Module):
         self.gamma4 = nn.Linear(3 * num_features // 2, 1)
 
     def forward(self, x, edge_index, edge_weight, batch, states):
-        # x1: 建模节点可到达的能力，也反映节点在图中的结构信息
-        # x2: 建模节点的传播能力
-        # x = self.encoder(x, edge_index, edge_weight)[1]
         x1 = x[:, : x.shape[1] // 2]
         x2 = x[:, x.shape[1] // 2:]
 
@@ -216,15 +209,11 @@ class StudentQValueNet(nn.Module):
             x1_sum += x1
             x2_sum += x2
 
-        # attention
-        # 拼接上述每步聚合得到的节点信息，使用多头注意力，对多头注意力得到的结果，再计算注意力聚合每步的信息
         x1 = x1_sum
         x2 = x2_sum
 
-        # 拼接x1和x2得到节点的最终向量表示
         x = F.leaky_relu(self.beta2(torch.cat([self.beta0(x1), self.beta1(x2)], dim=-1)), 0.2)
 
-        # 计算q
         selected_nodes = states == 1
         batch_num = torch_scatter.scatter_add(torch.ones(batch.shape[0], dtype=torch.long, device=batch.device), batch)
         x_s = torch_scatter.scatter_add(x[selected_nodes], batch[selected_nodes], dim=0,

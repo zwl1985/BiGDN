@@ -50,10 +50,12 @@ Code files
 - models.py: define parameters and structures of BiGDN and BiGDNs.  
 - agent.py: define agents to follow reinforcement learning procedure.
 - environment.py: store the process of simulation.  
-- utils/graph_utils.py: obtain graph information function and use Monte Carlo simulation of propagation range under IC model and ReplayBuffer.
+- utils.py: obtain graph information function and use Monte Carlo simulation of propagation range under IC model and ReplayBuffer.
+- node_encoder/train.ipynb: implementation and Pre training of Node Encoder.
+- graph_process.ipynb: process the graph by converting nodes into consecutive integers numbered from 0.
 
-Please refer to the code for specific parameter settings
+Please refer to the code for specific parameter settings and implementation.
 
 License
 -------
-This project is licensed under the terms of the [MIT](https://github.com/zzzkhj/BiGDN/LICENSE) license.
+This project is licensed under the terms of the [MIT](LICENSE) license.

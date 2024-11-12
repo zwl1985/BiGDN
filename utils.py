@@ -39,9 +39,8 @@ def get_graph_edge_index(graph, weight=True):
     edge_index = [sources, targets]
 
     if weight:
-        # 如果需要权重，则提取带有数据的边
         edges_data = graph.edges(data=True)
-        weights = [d['weight'] for u, v, d in edges_data]  # 假设所有边都有权重
+        weights = [d['weight'] for u, v, d in edges_data]  
         return edge_index, weights
     else:
         return edge_index

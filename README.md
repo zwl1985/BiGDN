@@ -56,6 +56,13 @@ Code files
 
 Please refer to the code for specific parameter settings and implementation.
 
+Folders
+----------
+
+- test_graphs: there are 8 test graphs, the YouTube graph file is too large to upload.
+- train_graphs: there are 15 training graphs, consistent with the training graphs of ToupleGDD.
+- node_encoder: contains training graphs and training code used by NE.
+
 License
 -------
 This project is licensed under the terms of the [MIT](LICENSE) license.

@@ -66,3 +66,18 @@ Folders
 License
 -------
 This project is licensed under the terms of the [MIT](LICENSE) license.
+
+Usage
+-------
+If the code is used, please cite it:
+@article{BiGDN,
+title = {BiGDN: An end-to-end influence maximization framework based on deep reinforcement learning and graph neural networks},
+journal = {Expert Systems with Applications},
+volume = {270},
+pages = {126384},
+year = {2025},
+issn = {0957-4174},
+doi = {https://doi.org/10.1016/j.eswa.2025.126384},
+url = {https://www.sciencedirect.com/science/article/pii/S0957417425000065},
+author = {Wenlong Zhu and Kaijing Zhang and Jiahui Zhong and Chengle Hou and Jie Ji},
+}

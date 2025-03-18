@@ -67,7 +67,7 @@ License
 -------
 This project is licensed under the terms of the [MIT](LICENSE) license.
 
-Usage
+Cite
 -------
 If the code is used, please cite it:
 

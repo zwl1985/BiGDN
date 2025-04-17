@@ -31,7 +31,7 @@ class GraphEnvironment:
         self.states = []
         self.actions = []
         self.rewards = []
-        self.next_states = []
+        # self.next_states = []
 
         self.seeds = []
         self.state_records = {}
@@ -47,7 +47,7 @@ class GraphEnvironment:
         self.states = []
         self.actions = []
         self.rewards = []
-        self.next_states = []
+        # self.next_states = []
         return self.state
 
     def step(self, action):
@@ -63,9 +63,12 @@ class GraphEnvironment:
         if len(self.seeds) == self.k:
             done = True
 
+        if done:
+            self.states.append(self.state.copy())
+
         self.actions.append(action)
         self.rewards.append(reward)
-        self.next_states.append(self.state)
+        # self.next_states.append(self.state)
         return reward, self.state, done
 
     def compute_reward(self):
@@ -86,15 +89,19 @@ class GraphEnvironment:
         else:
             pass
 
-    def n_step_add_buffer(self, buffer):  
-        for i in range(len(self.states)):  
-            if i + self.n_steps < len(self.states) - 1:  
-                n_reward = 0  
-                for j in range(self.n_steps):
-                    n_reward += self.rewards[i + j] / self.graph.number_of_nodes() * (self.gamma ** j)
-                buffer.add(self.states[i], self.actions[i], n_reward, self.states[i + self.n_steps], False, self.graph)  
-            elif i + self.n_steps == len(self.states) - 1:  
-                n_reward = 0  
-                for j in range(self.n_steps):
-                    n_reward += self.rewards[i + j] / self.graph.number_of_nodes() * (self.gamma ** j)
-                buffer.add(self.states[i], self.actions[i], n_reward, self.states[i + self.n_steps], True, self.graph)  
+    def n_step_add_buffer(self, buffer):
+        states = self.states
+        rewards = self.rewards
+        n = self.n_steps
+        gamma = self.gamma
+        
+        # Directly limit the cycle range and avoid processing the situation of insufficient n steps
+        for i in range(len(states) - n):
+            # Determines whether it is terminated
+            done = (i + n) == (len(states) - 1)
+            next_state = states[i + n]
+            
+            # Calculate the n-step reward
+            n_reward = sum(rewards[i + j] * (gamma ** j) for j in range(n))
+            
+            buffer.add(states[i], self.actions[i], n_reward, next_state, terminal, self.graph)

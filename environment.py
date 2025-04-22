@@ -104,4 +104,4 @@ class GraphEnvironment:
             # Calculate the n-step reward
             n_reward = sum(rewards[i + j] * (gamma ** j) for j in range(n))
             
-            buffer.add(states[i], self.actions[i], n_reward, next_state, terminal, self.graph)
+            buffer.add(states[i], self.actions[i], n_reward, next_state, done, self.graph)

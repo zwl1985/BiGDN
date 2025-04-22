@@ -168,7 +168,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Training required parameters")
-    parser.add_argument("--lr", type=float, default="0.001", help="Learning rate.")
+    parser.add_argument("--lr", type=float, default=0.001, help="Learning rate.")
     parser.add_argument("--k", type=int, default=5, help="The number of selected seed nodes.")
     parser.add_argument("--n_steps", type=int, default=1, help="Step size.")
     parser.add_argument("--gamma", type=float, default=0.99, help="Discount factor.")

@@ -46,15 +46,17 @@ class Agent:
             data = get_q_net_input([env.graph], self.num_features, self.device)
             self.q_net.eval()
             q_values = self.q_net(data.x, data.edge_index, data.edge_weight, data.batch, states)
-            selectable_q_values_sort = q_values[selectable_nodes_t].sort(descending=True).values
-            for mq in selectable_q_values_sort:
-                max_position = set((q_values == mq).nonzero().view(-1).tolist())
-                nodes = list(set(selectable_nodes).intersection(max_position))
-                if len(nodes) > 0:
-                    node = random.choice(nodes)
-                    break
-                else:
-                    print(mq, (q_values == mq).nonzero().view(-1))
+            q_values_selectable = q_values[selectable_nodes]
+            max_q_value, _ = q_values_selectable.max(0)
+            max_indices = (q_values_selectable == max_q_value).nonzero(as_tuple=False).squeeze()
+
+            if max_indices.numel() == 1:  
+                max_index = max_indices.item()
+            else:
+                max_index = max_indices[random.randint(0, len(max_indices) - 1)].item()
+
+            node = selectable_nodes[max_index]
+
         return node
 
     def update(self, states, actions, rewards, next_states, graphs, dones):

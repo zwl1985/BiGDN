@@ -155,10 +155,14 @@ def main(args):
         file_path = os.path.join(g_folder_path, filename)
         g = nx.read_edgelist(file_path, nodetype=int, create_using=nx.DiGraph)
         for u, v, a in g.edges(data=True):
-            a['weight'] = 1 / len(list(g.predecessors(v)))
+            a['weight'] = 1 / g.in_degree(v)
         train_graphs.append(g)
-        if 'graph1.txt' == filename:
-            test_graphs.append(g)
+        # if 'graph1.txt' == filename:
+        #     test_graphs.append(g)
+    test_graph = nx.read_edgelist('test_graphs/soc-dolphins.txt', nodetype=int, create_using=nx.DiGraph)
+    for u, v, a in test_graph.edges(data=True):
+        a['weight'] = 1 / test_graph.in_degree(v)
+    test_graphs.append(test_graph)
 
     env = GraphEnvironment(train_graphs, k, gamma, n_steps, R=10000, num_workers=1)
     test_env = GraphEnvironment(test_graphs, k, gamma, n_steps, R=10000, num_workers=1)

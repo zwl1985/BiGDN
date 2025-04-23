@@ -85,7 +85,8 @@ class Agent:
                                                                            data.batch, next_states) + next_states * -1e6,
                                                          data.batch)[0].clamp_(min=0)
             else: # DDQN
-                max_actions = torch_scatter.scatter_max(actions_q_values + next_states * -1e6, data.batch)[1]
+                next_q_values = self.q_net(data.x, data.edge_index, data.edge_weight, data.batch, next_states)
+                max_actions = torch_scatter.scatter_max(next_q_values + next_states * -1e6, data.batch)[1]
                 max_q_values = (
                     self.target_q_net(data.x, data.edge_index, data.edge_weight, data.batch, next_states).gather(dim=0,
                                                                                                                   index=max_actions)).clamp_(

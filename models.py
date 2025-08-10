@@ -87,7 +87,7 @@ class NodeEncoder(nn.Module):
         x2 = x[:, :x.shape[1] // 2]
         for i, (conv1, conv2) in enumerate(zip(self.convs1, self.convs2)):
             x1 = F.leaky_relu(conv1(x1, edge_index[[1, 0]], edge_weight, None if i == 0 else 1.0), 0.2)
-            x2 = F.leaky_relu(conv2(x2, edge_index, edge_weight, None if i == 0 else 1.0), 0.2)
+            x2 = F.leaky_relu(conv1(x2, edge_index, edge_weight, None if i == 0 else 1.0), 0.2)
         x = self.fc1(torch.cat([self.w1(x1), self.w2(x2)], dim=-1))
         y = x
         x = F.leaky_relu(self.fc2(x), 0.2).view(-1)

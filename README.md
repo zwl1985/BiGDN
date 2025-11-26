@@ -1,6 +1,6 @@
 # BiGDN
 
-Implementation of "BiGDN: An End-To-End Influence Maximization Framework Based on Deep Reinforcement Learning and Graph Neural Networks"
+Implementation of "BiGDN: An End-To-End Influence Maximization Framework Based on Deep Reinforcement Learning and Graph Neural Networks", [view](https://doi.org/10.1016/j.eswa.2025.126384)
 
 Run the code
 ------------

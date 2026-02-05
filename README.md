@@ -69,7 +69,7 @@ This project is licensed under the terms of the [MIT](LICENSE) license.
 
 Cite
 -------
-If the code is used, please cite it:
+If the code is userful for you, you can cite it:
 
 ```text
 @article{BiGDN,

@@ -94,14 +94,12 @@ class GraphEnvironment:
         rewards = self.rewards
         n = self.n_steps
         gamma = self.gamma
+        reward_scale = 1.0 / self.graph.number_of_nodes()
         
-        # Directly limit the cycle range and avoid processing the situation of insufficient n steps
         for i in range(len(states) - n):
-            # Determines whether it is terminated
             done = (i + n) == (len(states) - 1)
             next_state = states[i + n]
             
-            # Calculate the n-step reward
-            n_reward = sum(rewards[i + j] / self.graph.number_of_nodes() * (gamma ** j) for j in range(n))
+            n_reward = sum(rewards[i + j] * reward_scale * (gamma ** j) for j in range(n))
             
             buffer.add(states[i], self.actions[i], n_reward, next_state, done, self.graph)
